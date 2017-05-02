@@ -1,1 +1,1 @@
-import "./components/atoms/ready";
+import ready from "./components/atoms/ready";
