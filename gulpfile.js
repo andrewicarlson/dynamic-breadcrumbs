@@ -8,7 +8,6 @@ var assign = require('lodash.assign');
 var buffer = require('vinyl-buffer');
 var babelify = require('babelify');
 var tsify = require('tsify');
-var tslintify = require('tslintify');
 var browserSync = require('browser-sync');
 var uglify = require('gulp-uglify');
 
@@ -43,9 +42,7 @@ var opts = assign({}, watchify.args, customOpts);
 var build = watchify(browserify(opts));
 
 build
-  .plugin(tslintify, {format: 'stylish'})
   .plugin(tsify)
-  .on('error', error => console.error(error))
   .transform(babelify, {
 
     presets: ['es2015'],
@@ -60,8 +57,6 @@ function bundle() {
   return build.bundle()
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))
     .pipe(source('global.js'))
-    //.pipe(buffer())
-    //.pipe(uglify())
     .pipe(gulp.dest(paths.scripts.after));
 }
 

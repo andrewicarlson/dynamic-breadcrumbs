@@ -4,7 +4,8 @@
   "description": "A plugin for generating dynamic breadcrumbs following a users progression through a site.",
   "main": "gulpfile.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "author": "Andrew Carlson",
   "license": "MIT",
@@ -17,14 +18,13 @@
     "gulp": "3.9.1",
     "gulp-pug": "3.2.0",
     "gulp-sourcemaps": "2.4.0",
+    "gulp-tslint": "8.0.0",
     "gulp-typescript": "3.1.4",
     "gulp-uglify": "2.0.1",
     "gulp-util": "3.0.8",
     "lodash.assign": "4.2.0",
     "tsify": "3.0.1",
     "tslint": "5.1.0",
-    "tslint-config-airbnb": "1.1.1",
-    "tslintify": "2.0.2",
     "typescript": "2.1.5",
     "vinyl-buffer": "1.0.0",
     "vinyl-source-stream": "1.1.0",
