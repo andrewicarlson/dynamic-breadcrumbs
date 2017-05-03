@@ -1,5 +1,4 @@
 import ready from "./components/atoms/ready";
-import nlToArray from "./components/atoms/nodelist-to-array";
 
 interface IBreadcrumb {
   label: string;
@@ -8,8 +7,19 @@ interface IBreadcrumb {
 
 interface IAddEntry {
   currentBreadcrumbs: IBreadcrumb[];
-  newBreadcrumb: IBreadcrumb;
   localStorageName: string;
+  newBreadcrumb: IBreadcrumb;
+}
+
+interface IGenerateHTML {
+  breadcrumbElement: HTMLElement;
+  breadcrumbsToInsert: IBreadcrumb[];
+  maxVisible: number;
+}
+
+interface IBreadcrumbConstructor {
+  breadcrumbElement: HTMLElement;
+  maxVisible: number;
 }
 
 class Breadcrumbs {
@@ -18,9 +28,11 @@ class Breadcrumbs {
   private localStorageName: string = "breadcrumbs";
   private newBreadcrumb: IBreadcrumb;
   private currentBreadcrumbs: IBreadcrumb[];
+  private maxVisible: number;
 
-  constructor(breadcrumbElement) {
-    this.breadcrumbElement = breadcrumbElement;
+  constructor(obj: IBreadcrumbConstructor) {
+    this.breadcrumbElement = obj.breadcrumbElement;
+    this.maxVisible = obj.maxVisible || 3;
     this.init();
   }
 
@@ -77,15 +89,16 @@ class Breadcrumbs {
     return anchor;
   }
 
-  private generateHTML(breadcrumbs: IBreadcrumb[], breadcrumbElement: HTMLElement) {
+  private generateHTML(obj: IGenerateHTML) {
 
     let frag = document.createDocumentFragment();
+    let truncatedBreadcrumbs = obj.breadcrumbsToInsert.slice(obj.maxVisible * -1);
 
-    breadcrumbs.forEach((currentItem) => {
+    truncatedBreadcrumbs.forEach((currentItem, index) => {
       frag.appendChild(this.createBreadcrumbHTML(currentItem));
     });
 
-    breadcrumbElement.appendChild(frag);
+    obj.breadcrumbElement.appendChild(frag);
   }
 
   private init() {
@@ -101,7 +114,11 @@ class Breadcrumbs {
       localStorageName: this.localStorageName,
       newBreadcrumb: this.newBreadcrumb,
     });
-    this.generateHTML(this.currentBreadcrumbs, this.breadcrumbElement);
+    this.generateHTML({
+      breadcrumbElement: this.breadcrumbElement,
+      breadcrumbsToInsert: this.currentBreadcrumbs,
+      maxVisible: this.maxVisible,
+    });
   }
 }
 
@@ -109,6 +126,9 @@ ready(() => {
   let breadcrumbs = <HTMLElement> document.querySelector(".js-breadcrumb");
 
   if (breadcrumbs !== null) {
-    new Breadcrumbs(breadcrumbs); // tslint:disable-line
+    new Breadcrumbs({
+      breadcrumbElement: breadcrumbs,
+      maxVisible: 4,
+    }); // tslint:disable-line
   }
 });
