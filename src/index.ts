@@ -1,4 +1,5 @@
 import ready from "./components/atoms/ready";
+import nlToArray from "./components/atoms/nodelist-to-array";
 
 interface IBreadcrumb {
   label: string;
@@ -20,15 +21,7 @@ class Breadcrumbs {
 
   constructor(breadcrumbElement) {
     this.breadcrumbElement = breadcrumbElement;
-    this.cookieCheck(this.cookieName, this.localStorageName);
-    this.currentBreadcrumbs = JSON.parse(window.localStorage.getItem(this.localStorageName));
-    this.newBreadcrumb = this.createNewBreadcrumb(this.breadcrumbElement, window.location.href);
-    this.currentBreadcrumbs = this.addIfUniqueEntry({
-      currentBreadcrumbs: this.currentBreadcrumbs,
-      localStorageName: this.localStorageName,
-      newBreadcrumb: this.newBreadcrumb,
-    });
-    this.generateHTML(this.currentBreadcrumbs, this.breadcrumbElement);
+    this.init();
   }
 
   /**
@@ -93,6 +86,22 @@ class Breadcrumbs {
     });
 
     breadcrumbElement.appendChild(frag);
+  }
+
+  private init() {
+    if (!this.breadcrumbElement) {
+      return;
+    }
+
+    this.cookieCheck(this.cookieName, this.localStorageName);
+    this.currentBreadcrumbs = JSON.parse(window.localStorage.getItem(this.localStorageName));
+    this.newBreadcrumb = this.createNewBreadcrumb(this.breadcrumbElement, window.location.href);
+    this.currentBreadcrumbs = this.addIfUniqueEntry({
+      currentBreadcrumbs: this.currentBreadcrumbs,
+      localStorageName: this.localStorageName,
+      newBreadcrumb: this.newBreadcrumb,
+    });
+    this.generateHTML(this.currentBreadcrumbs, this.breadcrumbElement);
   }
 }
 
