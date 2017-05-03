@@ -1,4 +1,6 @@
 import ready from "./components/atoms/ready";
+import interpolate from "./components/atoms/interpolation";
+import nlToArray from "./components/atoms/nodelist-to-array";
 
 interface IBreadcrumb {
   label: string;
@@ -15,11 +17,18 @@ interface IGenerateHTML {
   breadcrumbElement: HTMLElement;
   breadcrumbsToInsert: IBreadcrumb[];
   maxVisible: number;
+  breadcrumbsHTML: string;
+}
+
+interface ICreateBreadcrumb {
+  breadcrumbDetails: IBreadcrumb;
+  breadcrumbsHTML: string;
 }
 
 interface IBreadcrumbConstructor {
   breadcrumbElement: HTMLElement;
-  maxVisible: number;
+  maxVisible?: number;
+  breadcrumbsHTML?: string;
 }
 
 class Breadcrumbs {
@@ -29,10 +38,12 @@ class Breadcrumbs {
   private newBreadcrumb: IBreadcrumb;
   private currentBreadcrumbs: IBreadcrumb[];
   private maxVisible: number;
+  private breadcrumbsHTML: string;
 
   constructor(obj: IBreadcrumbConstructor) {
     this.breadcrumbElement = obj.breadcrumbElement;
     this.maxVisible = obj.maxVisible || 3;
+    this.breadcrumbsHTML = obj.breadcrumbsHTML || "<a href='{url}' title='{label}'>{label}</a>";
     this.init();
   }
 
@@ -57,6 +68,14 @@ class Breadcrumbs {
     }
   }
 
+  /**
+   *
+   * @param obj
+   * @returns {IBreadcrumb[]}
+   *
+   * This method only adds an item to the breadcrumbs in localStorage if the current url is unique from the most
+   * recent entry in the object. This prevents extra breadcrumbs from being added if you refresh the page.
+   */
   private addIfUniqueEntry(obj: IAddEntry): IBreadcrumb[] {
     let lastBreadcrumb = obj.currentBreadcrumbs.slice(-1).pop();
 
@@ -79,14 +98,36 @@ class Breadcrumbs {
     };
   }
 
-  private createBreadcrumbHTML(breadcrumb: IBreadcrumb) {
-    let anchor = document.createElement("a");
+  private createBreadcrumbHTML(obj: ICreateBreadcrumb) {
+    let temp = document.createElement("div");
 
-    anchor.href = breadcrumb.url;
-    anchor.title = breadcrumb.label;
-    anchor.appendChild(document.createTextNode(breadcrumb.label));
+    temp.innerHTML = interpolate(
+        obj.breadcrumbsHTML,
+        {
+          label: obj.breadcrumbDetails.label,
+          url: obj.breadcrumbDetails.url
+        }
+    );
 
-    return anchor;
+    return temp.childNodes;
+  }
+
+  /**
+   *
+   * @param nodeList
+   * @param frag
+   * @returns {DocumentFragment}
+   *
+   * Creates an array from a NodeList so we have native access to .forEach() and then appends each Node to the fragment.
+   */
+  private addNlToFrag(nodeList: NodeList, frag: DocumentFragment): DocumentFragment {
+    let nodeArray = nlToArray(nodeList);
+
+    nodeArray.forEach((currentItem) => {
+      frag.appendChild(currentItem);
+    });
+
+    return frag;
   }
 
   private generateHTML(obj: IGenerateHTML) {
@@ -95,7 +136,12 @@ class Breadcrumbs {
     let truncatedBreadcrumbs = obj.breadcrumbsToInsert.slice(obj.maxVisible * -1);
 
     truncatedBreadcrumbs.forEach((currentItem, index) => {
-      frag.appendChild(this.createBreadcrumbHTML(currentItem));
+      let breadcrumbHTML: NodeList = this.createBreadcrumbHTML({
+        breadcrumbDetails: currentItem,
+        breadcrumbsHTML: obj.breadcrumbsHTML,
+      });
+
+      frag = this.addNlToFrag(breadcrumbHTML, frag);
     });
 
     obj.breadcrumbElement.appendChild(frag);
@@ -118,6 +164,7 @@ class Breadcrumbs {
       breadcrumbElement: this.breadcrumbElement,
       breadcrumbsToInsert: this.currentBreadcrumbs,
       maxVisible: this.maxVisible,
+      breadcrumbsHTML: this.breadcrumbsHTML,
     });
   }
 }
@@ -129,6 +176,7 @@ ready(() => {
     new Breadcrumbs({
       breadcrumbElement: breadcrumbs,
       maxVisible: 4,
+      breadcrumbsHTML: "<a href='{url}'>{label}</a>"
     }); // tslint:disable-line
   }
 });
