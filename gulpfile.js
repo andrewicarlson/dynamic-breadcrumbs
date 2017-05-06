@@ -57,7 +57,7 @@ function bundle() {
   return build.bundle()
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))
     .pipe(source('dynamic-breadcrumbs.js'))
-    //.pipe(streamify(uglify()))
+    .pipe(streamify(uglify()))
     .pipe(gulp.dest(paths.scripts.after));
 }
 
