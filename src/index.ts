@@ -1,6 +1,5 @@
 import interpolate from "./components/atoms/interpolation";
 import nlToArray from "./components/atoms/nodelist-to-array";
-import ready from "./components/atoms/ready";
 
 interface IBreadcrumb {
   label: string;
@@ -169,14 +168,4 @@ class Breadcrumbs {
   }
 }
 
-ready(() => {
-  let breadcrumbs = <HTMLElement> document.querySelector(".js-breadcrumb");
-
-  if (breadcrumbs !== null) {
-    new Breadcrumbs({
-      breadcrumbElement: breadcrumbs,
-      breadcrumbsHTML: "<a href='{url}'>{label}</a>",
-      maxVisible: 4,
-    }); // tslint:disable-line
-  }
-});
+window["Breadcrumbs"] = Breadcrumbs; // tslint:disable-line

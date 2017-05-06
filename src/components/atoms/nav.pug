@@ -11,3 +11,13 @@ ul
         a(href="/learn-more.html") Learn More
 
 script(src="dynamic-breadcrumbs.js")
+script.
+  var breadcrumbs = document.querySelector(".js-breadcrumb");
+
+  if(breadcrumbs !== null) {
+    new Breadcrumbs({
+      breadcrumbElement: breadcrumbs,
+      breadcrumbsHTML: "<a href='{url}'>{label}</a>",
+      maxVisible: 4,
+    })
+  }

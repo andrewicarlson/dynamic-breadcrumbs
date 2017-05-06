@@ -19,7 +19,6 @@ var paths = {
 
 paths.scripts = {
   entry: paths.before + '/index.ts',
-  before: paths.before + '/**/*.ts',
   after: paths.after
 };
 
@@ -58,7 +57,7 @@ function bundle() {
   return build.bundle()
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))
     .pipe(source('dynamic-breadcrumbs.js'))
-    .pipe(streamify(uglify()))
+    //.pipe(streamify(uglify()))
     .pipe(gulp.dest(paths.scripts.after));
 }
 
@@ -75,19 +74,16 @@ gulp.task('views', function() {
 gulp.task('scripts', bundle);
 
 gulp.task('serve', ['scripts', 'views'], function() {
-
     browserSync.init({
-
         server: {
-
             baseDir: paths.server
         }
     });
 
     gulp.watch(paths.views.before, ['views']);
     gulp.watch([
-      paths.scripts.after + '/global.js',
-      paths.views.after + '/*.html'
+      paths.scripts.after + '/dynamic-breadcrumbs.js',
+      paths.views.after + '/**/*.html'
     ]).on('change', browserSync.reload);
 });
 
