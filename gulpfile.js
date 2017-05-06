@@ -13,7 +13,7 @@ var uglify = require('gulp-uglify');
 
 var paths = {
   before: './src',
-  after: './build'
+  after: './dist'
 };
 
 paths.scripts = {
@@ -24,7 +24,7 @@ paths.scripts = {
 
 paths.views = {
   before: paths.before + '/**/*.pug',
-  after: paths.after
+  after: paths.after + '/html'
 };
 
 paths.server = paths.after;
@@ -56,7 +56,8 @@ function bundle() {
 
   return build.bundle()
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-    .pipe(source('global.js'))
+    .pipe(source('dynamic-breadcrumbs.js'))
+    .pipe(uglify())
     .pipe(gulp.dest(paths.scripts.after));
 }
 
