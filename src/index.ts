@@ -1,6 +1,6 @@
-import ready from "./components/atoms/ready";
 import interpolate from "./components/atoms/interpolation";
 import nlToArray from "./components/atoms/nodelist-to-array";
+import ready from "./components/atoms/ready";
 
 interface IBreadcrumb {
   label: string;
@@ -105,8 +105,8 @@ class Breadcrumbs {
         obj.breadcrumbsHTML,
         {
           label: obj.breadcrumbDetails.label,
-          url: obj.breadcrumbDetails.url
-        }
+          url: obj.breadcrumbDetails.url,
+        },
     );
 
     return temp.childNodes;
@@ -162,9 +162,9 @@ class Breadcrumbs {
     });
     this.generateHTML({
       breadcrumbElement: this.breadcrumbElement,
+      breadcrumbsHTML: this.breadcrumbsHTML,
       breadcrumbsToInsert: this.currentBreadcrumbs,
       maxVisible: this.maxVisible,
-      breadcrumbsHTML: this.breadcrumbsHTML,
     });
   }
 }
@@ -175,8 +175,8 @@ ready(() => {
   if (breadcrumbs !== null) {
     new Breadcrumbs({
       breadcrumbElement: breadcrumbs,
+      breadcrumbsHTML: "<a href='{url}'>{label}</a>",
       maxVisible: 4,
-      breadcrumbsHTML: "<a href='{url}'>{label}</a>"
     }); // tslint:disable-line
   }
 });
