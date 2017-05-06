@@ -10,6 +10,7 @@ var babelify = require('babelify');
 var tsify = require('tsify');
 var browserSync = require('browser-sync');
 var uglify = require('gulp-uglify');
+var streamify = require('gulp-streamify');
 
 var paths = {
   before: './src',
@@ -24,7 +25,7 @@ paths.scripts = {
 
 paths.views = {
   before: paths.before + '/**/*.pug',
-  after: paths.after + '/html'
+  after: paths.after
 };
 
 paths.server = paths.after;
@@ -57,7 +58,7 @@ function bundle() {
   return build.bundle()
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))
     .pipe(source('dynamic-breadcrumbs.js'))
-    .pipe(uglify())
+    .pipe(streamify(uglify()))
     .pipe(gulp.dest(paths.scripts.after));
 }
 
@@ -90,6 +91,4 @@ gulp.task('serve', ['scripts', 'views'], function() {
     ]).on('change', browserSync.reload);
 });
 
-gulp.task('build', ['views', 'scripts']);
-
-gulp.task('default', ['build']);
+gulp.task('default', ['serve']);
